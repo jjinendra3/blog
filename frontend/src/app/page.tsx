@@ -2,13 +2,11 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { BlogCard } from "@/components/HomePage/BlogCard";
 import { blogPosts } from "@/lib/constants";
-import { Header } from "@/components/HomePage/Header";
 import { Footer } from "@/components/HomePage/Footer";
 
-export default function JJBlogsHomepage() {
+export default function Page() {
   return (
     <div className="min-h-screen bg-black text-white">
-      <Header />
       <section className="max-w-6xl mx-auto px-4 py-16 md:py-24">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent leading-tight">

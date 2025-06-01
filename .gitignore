@@ -2,19 +2,20 @@
 
 # dependencies
 node_modules
-/.pnp
+.pnp
 .pnp.js
 .yarn/install-state.gz
+generated
 
 # testing
 /coverage
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
 # production
-/build
+build
 
 # misc
 .DS_Store
@@ -27,7 +28,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
-
+.env
 # vercel
 .vercel
 

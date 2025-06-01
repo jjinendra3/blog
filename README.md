@@ -1,1 +1,1 @@
-Run `bun dev`
+Run `npm run dev`

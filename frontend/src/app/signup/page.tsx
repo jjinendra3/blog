@@ -24,6 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import Signup from "@/services/signup";
 
 const signupSchema = z
   .object({
@@ -78,24 +79,13 @@ const SignupPage = () => {
     try {
       const { confirmPassword, ...submitData } = data;
 
-      const response = await fetch(`${process.env.BACKEND_URL}/auth/signup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(submitData),
-      });
+      const response = await Signup(submitData.email, submitData.password);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Signup failed");
+      if (!response.success) {
+        throw new Error(response.message || "Signup failed");
       }
 
-      const responseData = await response.json();
-
-      sessionStorage.setItem("authToken", responseData.token);
-
-      router.push("/dashboard");
+      router.push("/login");
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "An unexpected error occurred"

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BlogPosts } from "@/lib/types";
+import { Post } from "@/lib/types";
 
-export const BlogCard = ({ post }: { post: BlogPosts }) => {
+export const BlogCard = ({ post }: { post: Post }) => {
   return (
     <Card className="bg-gray-900 border-gray-800 hover:border-gray-700 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 group">
       <CardHeader className="pb-3">

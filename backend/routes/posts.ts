@@ -8,7 +8,7 @@ import { tokenAuth } from "../middlewares/authMiddleware";
 
 const app = Router();
 
-app.get("/posts", async (req: any, res: any) => {
+app.get("/", async (_: any, res: any) => {
   try {
     const posts = await getPosts();
     return res.status(200).json({

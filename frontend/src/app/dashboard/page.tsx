@@ -18,6 +18,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { blogPosts } from "@/lib/constants";
+import { FetchPostByAuthor } from "@/services/fetchPostByAuthor";
+import { Post } from "@/lib/types";
 
 const postSchema = z.object({
   title: z
@@ -31,18 +33,6 @@ const postSchema = z.object({
 });
 
 type PostFormData = z.infer<typeof postSchema>;
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-  author: {
-    name: string;
-    email: string;
-  };
-}
 
 const DashboardPage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -71,22 +61,11 @@ const DashboardPage = () => {
 
     try {
       const token = sessionStorage.getItem("authToken");
-      const response = await fetch(`${process.env.BACKEND_URL}/posts/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to create post");
+      if (!token) {
+        throw new Error("You must be logged in to create a post");
       }
-
-      const newPost = await response.json();
-      setPosts([newPost, ...posts]);
+      const newPost = await FetchPostByAuthor(token);
+      setPosts([...newPost, ...posts]);
       reset();
     } catch (err) {
       setError(

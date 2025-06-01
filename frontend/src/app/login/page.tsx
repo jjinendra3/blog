@@ -24,6 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import Login from "@/services/login";
 
 const loginSchema = z.object({
   email: z
@@ -64,23 +65,11 @@ const LoginPage = () => {
     setError(null);
 
     try {
-      const response = await fetch(`${process.env.BACKEND_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Login failed");
+      const response = await Login(data.email, data.password);
+      if (!response.success) {
+        throw new Error(response.message || "Login failed");
       }
-
-      const responseData = await response.json();
-
-      sessionStorage.setItem("authToken", responseData.token);
-
+      sessionStorage.setItem("authToken", response.token!);
       router.push("/dashboard");
     } catch (err) {
       setError(

@@ -1,10 +1,18 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { BlogCard } from "@/components/BlogCard";
-import { blogPosts } from "@/lib/constants";
 import { Footer } from "@/components/HomePage/Footer";
+import { FetchPosts } from "@/services/fetchPosts";
+import Loading from "@/components/Loading";
+import { Post } from "@/lib/types";
 
-export default function Page() {
+export default async function Page() {
+  const posts = await FetchPosts();
+
+  if (!posts) {
+    return <Loading />;
+  }
+
   return (
     <div className="min-h-screen bg-black text-white">
       <section className="max-w-6xl mx-auto px-4 py-16 md:py-24">
@@ -20,11 +28,19 @@ export default function Page() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
-          {blogPosts.map((post) => (
-            <BlogCard key={post.id} post={post} />
-          ))}
-        </div>
+        {posts.length !== 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
+            {posts.map((post: Post) => (
+              <BlogCard key={post.id} post={post} />
+            ))}
+          </div>
+        ) : (
+          <div>
+            <p className="text-center text-gray-500 text-lg">
+              No posts available at the moment. Please check back later!
+            </p>
+          </div>
+        )}
 
         <div className="text-center mt-12">
           <Button

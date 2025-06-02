@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { createUser, getUserByEmail } from "../helpers/authDb";
+import { createUser, getUserByEmail, getUserById } from "../helpers/authDb";
 import * as jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { checkRequestAuth } from "../middlewares/checkRequestMiddleware";
+import { tokenAuth } from "../middlewares/authMiddleware";
 
 const app = Router();
 
@@ -57,6 +58,26 @@ app.post("/login", checkRequestAuth, async (req: any, res: any) => {
     });
   } catch (error: any) {
     console.error("Error during login:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+      message: error.message,
+    });
+  }
+});
+
+app.get("/user", tokenAuth, async (req: any, res: any) => {
+  try {
+    const user = await getUserById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error: any) {
+    console.error("Error fetching user data:", error);
     return res.status(500).json({
       error: "Internal server error",
       message: error.message,

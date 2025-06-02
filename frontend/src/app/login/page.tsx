@@ -8,6 +8,7 @@ import * as z from "zod";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -69,11 +70,15 @@ const LoginPage = () => {
       if (!response.success) {
         throw new Error(response.message || "Login failed");
       }
+      console.log("Login successful:", response);
       sessionStorage.setItem("authToken", response.token!);
       router.push("/dashboard");
     } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "An unexpected error occurred",
+      );
       setError(
-        err instanceof Error ? err.message : "An unexpected error occurred"
+        err instanceof Error ? err.message : "An unexpected error occurred",
       );
     } finally {
       setIsLoading(false);

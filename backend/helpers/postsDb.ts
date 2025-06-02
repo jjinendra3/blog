@@ -31,7 +31,7 @@ export const getPostsByAuthor = async (authorId: string) => {
 export const createPost = async (
   title: string,
   content: string,
-  authorId: string
+  authorId: string,
 ) => {
   try {
     return await prisma.post.create({

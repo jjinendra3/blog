@@ -4,7 +4,7 @@ import axios from "axios";
 export default async function CreatePost(
   title: string,
   content: string,
-  userId: string
+  userId: string,
 ): Promise<FetchReturnType> {
   try {
     const response = await axios.post(
@@ -17,7 +17,7 @@ export default async function CreatePost(
         headers: {
           Authorization: `Bearer ${userId}`,
         },
-      }
+      },
     );
 
     if (response.status !== 201) {
@@ -26,7 +26,7 @@ export default async function CreatePost(
         message: response.data.message || "Post creation failed",
       };
     }
-    return { success: true };
+    return { success: true, data: response.data.post };
   } catch (error) {
     console.error("Create post error:", error);
     return { success: false, message: "An unexpected error occurred" };

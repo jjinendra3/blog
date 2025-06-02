@@ -24,3 +24,17 @@ export async function createUser(email: string, passwordHash: string) {
     throw new Error("Database query failed");
   }
 }
+
+export const getUserById = async (id: string) => {
+  try {
+    return await prisma.user.findUnique({
+      where: { id },
+      include: {
+        posts: true,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    throw new Error("Database query failed");
+  }
+};

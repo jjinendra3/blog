@@ -49,7 +49,7 @@ app.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 app.post(
@@ -58,10 +58,12 @@ app.post(
   checkRequestCreatePosts,
   async (req: any, res: any) => {
     try {
-      const { title, content, userId } = req.body;
-      await createPost(title, content, userId);
+      const { title, content } = req.body;
+      const post = await createPost(title, content, req.userId);
       return res.status(201).json({
         success: true,
+        post,
+        message: "Post created successfully",
       });
     } catch (error: any) {
       console.error("Error creating post:", error);
@@ -70,7 +72,7 @@ app.post(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 module.exports = app;

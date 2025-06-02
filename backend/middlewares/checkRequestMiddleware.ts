@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 export const checkRequestAuth = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   const { email, password } = req.body;
 
@@ -31,7 +31,7 @@ export const checkRequestAuth = async (
 export const checkRequestGetPostByAuthor = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   const { authorId } = req.params;
 
@@ -46,7 +46,7 @@ export const checkRequestGetPostByAuthor = async (
 export const checkRequestCreatePosts = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   const { title, content, userId } = req.body;
   if (!title || !content || !userId) {

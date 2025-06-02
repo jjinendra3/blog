@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -17,9 +17,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { FetchPostByAuthor } from "@/services/fetchPostByAuthor";
 import { Post } from "@/lib/types";
 import { formatDate } from "@/lib/timeUtils";
+import { useRouter } from "next/navigation";
+import FetchUser from "@/services/fetchUser";
+import CreatePost from "@/services/createPost";
+import { toast } from "sonner";
 
 const postSchema = z.object({
   title: z
@@ -35,10 +38,40 @@ const postSchema = z.object({
 type PostFormData = z.infer<typeof postSchema>;
 
 const DashboardPage = () => {
-  const blogPosts: Post[] = [];
+  const router = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const token = sessionStorage.getItem("authToken");
+        if (!token) {
+          throw new Error("You must be logged in to view posts");
+        }
+        const fetchedUser = await FetchUser(token);
+
+        setPosts(fetchedUser.user.posts ?? []);
+      } catch (err) {
+        console.error("Error fetching posts:", err);
+        setError(
+          err instanceof Error ? err.message : "An unexpected error occurred",
+        );
+        toast.error(
+          err instanceof Error ? err.message : "An unexpected error occurred",
+        );
+        router.push("/login");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
 
   const form = useForm<PostFormData>({
     resolver: zodResolver(postSchema),
@@ -65,12 +98,16 @@ const DashboardPage = () => {
       if (!token) {
         throw new Error("You must be logged in to create a post");
       }
-      const newPost = await FetchPostByAuthor(token);
-      setPosts([...newPost, ...posts]);
+      const newPost = await CreatePost(data.title, data.content, token);
+      setPosts([newPost.data as Post, ...posts]);
+      toast.success("Post created successfully!");
       reset();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "An unexpected error occurred"
+        err instanceof Error ? err.message : "An unexpected error occurred",
+      );
+      toast.error(
+        err instanceof Error ? err.message : "An unexpected error occurred",
       );
     } finally {
       setIsLoading(false);
@@ -168,14 +205,14 @@ const DashboardPage = () => {
           <div className="flex items-center gap-2">
             <User className="w-5 h-5 text-blue-400" />
             <h2 className="text-xl font-bold text-white">Your Posts</h2>
-            <span className="text-sm text-gray-400">({blogPosts.length})</span>
+            <span className="text-sm text-gray-400">({posts.length})</span>
           </div>
 
           {false ? (
             <div className="flex justify-center py-12">
               <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
             </div>
-          ) : blogPosts.length === 0 ? (
+          ) : posts.length === 0 ? (
             <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-md">
               <CardContent className="py-12 text-center">
                 <FileText className="w-12 h-12 text-gray-600 mx-auto mb-4" />
@@ -186,7 +223,7 @@ const DashboardPage = () => {
             </Card>
           ) : (
             <div className="space-y-4">
-              {blogPosts.map((post) => (
+              {posts.map((post) => (
                 <Card
                   key={post.id}
                   className="bg-gray-900/80 border-gray-800 backdrop-blur-md shadow-lg hover:bg-gray-900/90 transition-all"

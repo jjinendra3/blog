@@ -4,7 +4,7 @@ import { Response, NextFunction } from "express";
 export const tokenAuth = async (
   req: any,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {

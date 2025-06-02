@@ -1,10 +1,14 @@
-import { prisma } from "../utils/prisma";
+import prisma from "../utils/prisma";
 
 export const getPosts = async () => {
   try {
     return await prisma.post.findMany({
       include: {
-        author: true,
+        author: {
+          select: {
+            email: true,
+          },
+        },
       },
     });
   } catch (error) {

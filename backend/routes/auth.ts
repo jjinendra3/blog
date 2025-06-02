@@ -41,7 +41,7 @@ app.post("/login", checkRequestAuth, async (req: any, res: any) => {
       return res.status(401).json({ error: "Invalid email / No user Found!" });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid Password" });
     }
@@ -64,4 +64,4 @@ app.post("/login", checkRequestAuth, async (req: any, res: any) => {
   }
 });
 
-export default app;
+module.exports = app;

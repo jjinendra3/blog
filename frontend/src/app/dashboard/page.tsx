@@ -17,9 +17,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { blogPosts } from "@/lib/constants";
 import { FetchPostByAuthor } from "@/services/fetchPostByAuthor";
 import { Post } from "@/lib/types";
+import { formatDate } from "@/lib/timeUtils";
 
 const postSchema = z.object({
   title: z
@@ -35,6 +35,7 @@ const postSchema = z.object({
 type PostFormData = z.infer<typeof postSchema>;
 
 const DashboardPage = () => {
+  const blogPosts: Post[] = [];
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -167,7 +168,7 @@ const DashboardPage = () => {
           <div className="flex items-center gap-2">
             <User className="w-5 h-5 text-blue-400" />
             <h2 className="text-xl font-bold text-white">Your Posts</h2>
-            <span className="text-sm text-gray-400">({posts.length})</span>
+            <span className="text-sm text-gray-400">({blogPosts.length})</span>
           </div>
 
           {false ? (
@@ -204,12 +205,7 @@ const DashboardPage = () => {
                     <div className="flex items-center justify-between text-sm text-gray-500">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
-                        <span>
-                          Created{" "}
-                          {post.createdAt instanceof Date
-                            ? post.createdAt.toLocaleString()
-                            : post.createdAt}
-                        </span>
+                        <span>Created {formatDate(post.createdAt)}</span>
                       </div>
                     </div>
                   </CardContent>

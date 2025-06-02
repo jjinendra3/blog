@@ -3,15 +3,10 @@ import { Button } from "@/components/ui/button";
 import { BlogCard } from "@/components/BlogCard";
 import { Footer } from "@/components/HomePage/Footer";
 import { FetchPosts } from "@/services/fetchPosts";
-import Loading from "@/components/Loading";
 import { Post } from "@/lib/types";
 
 export default async function Page() {
   const posts = await FetchPosts();
-
-  if (!posts) {
-    return <Loading />;
-  }
 
   return (
     <div className="min-h-screen bg-black text-white">

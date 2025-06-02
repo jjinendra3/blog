@@ -73,4 +73,4 @@ app.post(
   }
 );
 
-export default app;
+module.exports = app;

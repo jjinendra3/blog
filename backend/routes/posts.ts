@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { createPost, getPosts, getPostsByAuthor } from "../helpers/postsDb";
+import {
+  createPost,
+  getPostById,
+  getPosts,
+  getPostsByAuthor,
+} from "../helpers/postsDb";
 import {
   checkRequestCreatePosts,
   checkRequestGetPostByAuthor,
@@ -17,6 +22,27 @@ app.get("/", async (_: any, res: any) => {
     });
   } catch (error: any) {
     console.error("Error fetching posts:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+      message: error.message,
+    });
+  }
+});
+
+app.get("/:id", async (req: any, res: any) => {
+  try {
+    console.log("Fetching post with ID:", req.params.id);
+    const { id } = req.params;
+    const post = await getPostById(id);
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+    return res.status(200).json({
+      success: true,
+      data: post,
+    });
+  } catch (error: any) {
+    console.error("Error fetching post by ID:", error);
     return res.status(500).json({
       error: "Internal server error",
       message: error.message,
@@ -49,7 +75,7 @@ app.get(
         message: error.message,
       });
     }
-  },
+  }
 );
 
 app.post(
@@ -72,7 +98,7 @@ app.post(
         message: error.message,
       });
     }
-  },
+  }
 );
 
 module.exports = app;

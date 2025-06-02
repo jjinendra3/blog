@@ -28,10 +28,29 @@ export const getPostsByAuthor = async (authorId: string) => {
   }
 };
 
+export const getPostById = async (id: string) => {
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id },
+      include: {
+        author: {
+          select: {
+            email: true,
+          },
+        },
+      },
+    });
+    return post;
+  } catch (error) {
+    console.error("Error fetching post by ID:", error);
+    throw new Error("Database query failed");
+  }
+};
+
 export const createPost = async (
   title: string,
   content: string,
-  authorId: string,
+  authorId: string
 ) => {
   try {
     return await prisma.post.create({

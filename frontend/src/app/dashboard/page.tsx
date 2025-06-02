@@ -18,11 +18,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Post } from "@/lib/types";
-import { formatDate } from "@/lib/timeUtils";
 import { useRouter } from "next/navigation";
 import FetchUser from "@/services/fetchUser";
 import CreatePost from "@/services/createPost";
 import { toast } from "sonner";
+import { BlogCard } from "@/components/BlogCard";
 
 const postSchema = z.object({
   title: z
@@ -54,15 +54,17 @@ const DashboardPage = () => {
           throw new Error("You must be logged in to view posts");
         }
         const fetchedUser = await FetchUser(token);
-
-        setPosts(fetchedUser.user.posts ?? []);
+        if (!fetchedUser.success) {
+          throw new Error(fetchedUser.message || "Failed to fetch user data");
+        }
+        setPosts(fetchedUser.data.posts ?? []);
       } catch (err) {
         console.error("Error fetching posts:", err);
         setError(
-          err instanceof Error ? err.message : "An unexpected error occurred",
+          err instanceof Error ? err.message : "An unexpected error occurred"
         );
         toast.error(
-          err instanceof Error ? err.message : "An unexpected error occurred",
+          err instanceof Error ? err.message : "An unexpected error occurred"
         );
         router.push("/login");
       } finally {
@@ -71,6 +73,7 @@ const DashboardPage = () => {
     };
 
     fetchPosts();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const form = useForm<PostFormData>({
@@ -99,15 +102,16 @@ const DashboardPage = () => {
         throw new Error("You must be logged in to create a post");
       }
       const newPost = await CreatePost(data.title, data.content, token);
+
       setPosts([newPost.data as Post, ...posts]);
       toast.success("Post created successfully!");
       reset();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "An unexpected error occurred",
+        err instanceof Error ? err.message : "An unexpected error occurred"
       );
       toast.error(
-        err instanceof Error ? err.message : "An unexpected error occurred",
+        err instanceof Error ? err.message : "An unexpected error occurred"
       );
     } finally {
       setIsLoading(false);
@@ -208,11 +212,7 @@ const DashboardPage = () => {
             <span className="text-sm text-gray-400">({posts.length})</span>
           </div>
 
-          {false ? (
-            <div className="flex justify-center py-12">
-              <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-            </div>
-          ) : posts.length === 0 ? (
+          {posts.length === 0 ? (
             <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-md">
               <CardContent className="py-12 text-center">
                 <FileText className="w-12 h-12 text-gray-600 mx-auto mb-4" />
@@ -224,29 +224,7 @@ const DashboardPage = () => {
           ) : (
             <div className="space-y-4">
               {posts.map((post) => (
-                <Card
-                  key={post.id}
-                  className="bg-gray-900/80 border-gray-800 backdrop-blur-md shadow-lg hover:bg-gray-900/90 transition-all"
-                >
-                  <CardContent className="p-6">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-lg font-semibold text-white line-clamp-2">
-                        {post.title}
-                      </h3>
-                    </div>
-
-                    <p className="text-gray-300 mb-4 line-clamp-3">
-                      {post.content}
-                    </p>
-
-                    <div className="flex items-center justify-between text-sm text-gray-500">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        <span>Created {formatDate(post.createdAt)}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <BlogCard key={post.id} post={post} />
               ))}
             </div>
           )}

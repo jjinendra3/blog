@@ -28,7 +28,9 @@ export async function createUser(email: string, passwordHash: string) {
 export const getUserById = async (id: string) => {
   try {
     return await prisma.user.findUnique({
-      where: { id },
+      where: {
+        id: id,
+      },
       include: {
         posts: true,
       },

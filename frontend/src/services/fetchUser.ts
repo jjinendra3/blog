@@ -11,12 +11,11 @@ export default async function FetchUser(token: string) {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    },
+    }
   );
 
   if (response.status !== 200) {
     throw new Error("Failed to fetch user data");
   }
-
   return response.data;
 }

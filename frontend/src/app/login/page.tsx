@@ -70,7 +70,6 @@ const LoginPage = () => {
       if (!response.success) {
         throw new Error(response.message || "Login failed");
       }
-      console.log("Login successful:", response);
       sessionStorage.setItem("authToken", response.token!);
       router.push("/dashboard");
     } catch (err) {

@@ -26,7 +26,6 @@ export default function RootLayout({
           expand
           position="bottom-right"
           richColors
-          closeButton
           theme="dark"
         />
       </body>

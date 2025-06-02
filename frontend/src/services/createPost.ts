@@ -8,7 +8,7 @@ export default async function CreatePost(
 ): Promise<FetchReturnType> {
   try {
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/post/create`,
+      `${process.env.NEXT_PUBLIC_API_URL}/posts/create`,
       {
         title,
         content,
@@ -26,7 +26,7 @@ export default async function CreatePost(
         message: response.data.message || "Post creation failed",
       };
     }
-    return { success: true, data: response.data.post };
+    return { success: true, data: response.data.data };
   } catch (error) {
     console.error("Create post error:", error);
     return { success: false, message: "An unexpected error occurred" };

@@ -3,7 +3,7 @@ import axios from "axios";
 
 export default async function Login(
   email: string,
-  password: string,
+  password: string
 ): Promise<FetchReturnType> {
   try {
     const response = await axios.post(
@@ -11,13 +11,13 @@ export default async function Login(
       {
         email,
         password,
-      },
+      }
     );
 
     if (response.status !== 200) {
       return {
         success: false,
-        message: response.data.message || "Login failed",
+        message: response.data.message ?? "Login failed",
       };
     }
     return {

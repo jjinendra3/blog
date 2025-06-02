@@ -3,7 +3,7 @@ import axios from "axios";
 
 export default async function Signup(
   email: string,
-  password: string,
+  password: string
 ): Promise<FetchReturnType> {
   try {
     const response = await axios.post(
@@ -11,18 +11,22 @@ export default async function Signup(
       {
         email,
         password,
-      },
+      }
     );
 
     if (response.status !== 201) {
       return {
         success: false,
-        message: response.data.message || "Signup failed",
+        message: response.data.message ?? "Signup failed",
       };
     }
     return { success: true };
   } catch (error) {
     console.error("Signup error:", error);
-    return { success: false, message: "An unexpected error occurred" };
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "An unexpected error occurred",
+    };
   }
 }

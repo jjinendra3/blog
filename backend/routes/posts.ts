@@ -10,6 +10,7 @@ import {
   checkRequestGetPostByAuthor,
 } from "../middlewares/checkRequestMiddleware";
 import { tokenAuth } from "../middlewares/authMiddleware";
+import { getUserById } from "../helpers/authDb";
 
 const app = Router();
 
@@ -31,7 +32,6 @@ app.get("/", async (_: any, res: any) => {
 
 app.get("/:id", async (req: any, res: any) => {
   try {
-    console.log("Fetching post with ID:", req.params.id);
     const { id } = req.params;
     const post = await getPostById(id);
     if (!post) {
@@ -50,33 +50,26 @@ app.get("/:id", async (req: any, res: any) => {
   }
 });
 
-app.get(
-  "/post/:authorId",
-  checkRequestGetPostByAuthor,
-  async (req: any, res: any) => {
-    try {
-      const { authorId } = req.params;
-      const posts = await getPostsByAuthor(authorId);
-
-      if (!posts || posts.length === 0) {
-        return res
-          .status(404)
-          .json({ error: "No posts found for this author" });
-      }
-
-      return res.status(200).json({
-        success: true,
-        data: posts,
-      });
-    } catch (error: any) {
-      console.error("Error fetching posts by author:", error);
-      return res.status(500).json({
-        error: "Internal server error",
-        message: error.message,
-      });
+app.get("/post/:authorId", async (req: any, res: any) => {
+  try {
+    const { authorId } = req.params;
+    const authorWithPosts = await getUserById(authorId);
+    if (!authorWithPosts) {
+      return res.status(404).json({ error: "No such author found" });
     }
+
+    return res.status(200).json({
+      success: true,
+      data: authorWithPosts,
+    });
+  } catch (error: any) {
+    console.error("Error fetching posts by author:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+      message: error.message,
+    });
   }
-);
+});
 
 app.post(
   "/create",
@@ -88,7 +81,7 @@ app.post(
       const post = await createPost(title, content, req.userId);
       return res.status(201).json({
         success: true,
-        post,
+        data: post,
         message: "Post created successfully",
       });
     } catch (error: any) {

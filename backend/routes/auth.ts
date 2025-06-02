@@ -13,7 +13,7 @@ app.post("/signup", checkRequestAuth, async (req: any, res: any) => {
 
     const existingUser = await getUserByEmail(email);
     if (existingUser) {
-      return res.status(409).json({ error: "User already exists" });
+      return res.status(409).json({ message: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -39,7 +39,7 @@ app.post("/login", checkRequestAuth, async (req: any, res: any) => {
 
     const user = await getUserByEmail(email);
     if (!user) {
-      return res.status(401).json({ error: "Invalid email / No user Found!" });
+      return res.status(401).json({ message: "Invalid email / No user Found!" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
@@ -74,7 +74,7 @@ app.get("/user", tokenAuth, async (req: any, res: any) => {
 
     return res.status(200).json({
       success: true,
-      user,
+      data: user,
     });
   } catch (error: any) {
     console.error("Error fetching user data:", error);
